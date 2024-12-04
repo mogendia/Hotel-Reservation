@@ -62,11 +62,12 @@ namespace Hotel_Reservation.Controllers
 
                     var smKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:Key"]));
                     var signCred = new SigningCredentials(smKey, SecurityAlgorithms.HmacSha256);
-
+                    //testing
                     var myToken = new JwtSecurityToken
                     (
                         issuer: _config["JWT:Issuer"],
                         audience: _config["JWT:Audience"],
+
                         expires: DateTime.Now.AddHours(1),
                         claims: userClaims,
                         signingCredentials: signCred
