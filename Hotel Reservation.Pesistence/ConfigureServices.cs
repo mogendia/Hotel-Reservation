@@ -24,7 +24,7 @@ namespace Hotel_Reservation.Persistence
             services.AddTransient(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddTransient<IReviewRepository, ReviewRepository>();
             services.AddTransient<IRoomRepository, RoomRepository>();
-
+            services.AddTransient<IGuestRepository, GuestReposititory>();
 
 
             services.Configure<IdentityOptions>(options =>

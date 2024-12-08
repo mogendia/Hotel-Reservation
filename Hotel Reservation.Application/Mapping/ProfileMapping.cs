@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Hotel_Reservation.Application.Features.Guests.Commands.CreateGuest;
+using Hotel_Reservation.Application.Features.Guests.Commands.UpdateGuest;
 using Hotel_Reservation.Application.Features.Reviews.Command.AddReview;
 using Hotel_Reservation.Application.Features.Reviews.Queries.GetReviewRooms;
 using Hotel_Reservation.Application.Features.Rooms.Commands.CreateRoom;
@@ -26,6 +28,10 @@ namespace Hotel_Reservation.Application.Mapping
             CreateMap<GetRoomReviewQuery, ReviewDto>().ReverseMap();
             CreateMap<RoomReview, ReviewDto>().ReverseMap();
             CreateMap<Review,RoomReview >().ReverseMap();
+            // Guest Mapping
+            CreateMap<Guest, GuestDto>().ReverseMap();
+            CreateMap<Guest, UpdateGuestCommand>().ReverseMap();
+            CreateMap<Guest, CreateGuestCommand>().ReverseMap();
         }
     }
 }

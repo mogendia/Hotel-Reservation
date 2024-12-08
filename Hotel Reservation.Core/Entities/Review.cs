@@ -11,7 +11,6 @@ namespace Hotel_Reservation.Core.Entities
     public class Review
     {
         public int Id { get; set; }
-        //public int GuestId { get; set; }
         public int RoomId { get; set; }
         [Range(1, 5),DefaultValue(1)]
         

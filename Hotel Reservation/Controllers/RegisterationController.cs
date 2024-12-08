@@ -4,8 +4,6 @@ using System.Security.Cryptography;
 using System.Text;
 using Hotel_Reservation.Core.Entities;
 using Hotel_Reservation.Core.Models;
-using Hotel_Reservation.Persistence.Data;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -17,13 +15,7 @@ namespace Hotel_Reservation.Controllers
     public class RegisterationController(UserManager<Guest> _userManager, IConfiguration _config) : ControllerBase
     {
 
-        //private string GenerateRefreshToken()
-        //{
-        //    var randomNumber = new byte[32];
-        //    using var rng = RandomNumberGenerator.Create();
-        //    rng.GetBytes(randomNumber);
-        //    return Convert.ToBase64String(randomNumber);
-        //}
+       
 
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto register)
@@ -55,14 +47,13 @@ namespace Hotel_Reservation.Controllers
                 {
                     var userClaims = new List<Claim>
                         {
-                            new (ClaimTypes.NameIdentifier,user.Id),
+                            //new (ClaimTypes.NameIdentifier,user.Id),
                             new (ClaimTypes.Email,user.Email),
                         };
 
 
                     var smKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:Key"]));
                     var signCred = new SigningCredentials(smKey, SecurityAlgorithms.HmacSha256);
-                    //testing
                     var myToken = new JwtSecurityToken
                     (
                         issuer: _config["JWT:Issuer"],
@@ -72,14 +63,11 @@ namespace Hotel_Reservation.Controllers
                         claims: userClaims,
                         signingCredentials: signCred
                     );
-                    //var refreshToken = GenerateRefreshToken();
-                    //user.RefreshToken = refreshToken;
-                    //user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
+                   
                     await _userManager.UpdateAsync(user);
                     return Ok(new
                     {
                         token = new JwtSecurityTokenHandler().WriteToken(myToken),
-                        //refreshToken,
                         expiresIn = DateTime.Now.AddHours(1),
                     });
 

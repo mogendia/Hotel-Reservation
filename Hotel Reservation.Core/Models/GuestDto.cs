@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 
-namespace Hotel_Reservation.Core.Entities
+namespace Hotel_Reservation.Core.Models
 {
-    public class Guest:IdentityUser<int>
+    public class GuestDto
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string? FullName { get; set; } 
-
+        public string? FullName { get; set; }
+    
     }
 }
