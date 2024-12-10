@@ -15,20 +15,25 @@ public class ReviewRepository(ApplicationDbContext context) : GenericRepository<
 {
     private readonly ApplicationDbContext _context = context;
 
-    public async Task<Review> AddRoomReview(ReviewCreateDto reviewDto)
+    public async Task<Review> AddRoomReview(ReviewCreateDto reviewDto,int rating)
     {
+      
         var roomExists = await _context.Rooms.AnyAsync(r => r.Id == reviewDto.RoomId);
         if (!roomExists)
         {
             throw new Exception("Room does not exist.");
         }
-
+        if (rating < 1 || rating > 5)
+        {
+            throw new ArgumentOutOfRangeException(nameof(rating), "Rating must be between 1 and 5.");
+        }
         Review review = new()
         {
             RoomId = reviewDto.RoomId,
             Rating = reviewDto.Rating,
             Comment = reviewDto.Comment
         };
+
 
         var result = await _context.Reviews.AddAsync(review);
         await _context.SaveChangesAsync();

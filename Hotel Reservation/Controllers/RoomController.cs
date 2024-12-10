@@ -4,6 +4,7 @@ using Hotel_Reservation.Application.Features.Rooms.Commands.UpdateRoom;
 using Hotel_Reservation.Application.Features.Rooms.Queries.GetRoomById;
 using Hotel_Reservation.Application.Features.Rooms.Queries.GetRoomList;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,6 +12,7 @@ namespace Hotel_Reservation.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes ="Bearer",Policy = "SuperAdmins")]
     public class RoomController(IMediator _mediaor) : ControllerBase
     {
         [HttpGet]
@@ -19,13 +21,14 @@ namespace Hotel_Reservation.Controllers
             var response = await _mediaor.Send(new GetRoomListQuery());
             return Ok(response);
         }
-        [HttpGet("{id:int}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetRoom(int id)
         {
             var response = await _mediaor.Send(new GetRoomByIdQuery() { Id = id });
             return Ok(response);
         }
         [HttpPost]
+        [Authorize(AuthenticationSchemes = "Bearer", Policy = "Customers")]
         public async Task<IActionResult> CreateRoom([FromBody] CreateRoomCommand command)
         {
             var response = await _mediaor.Send(command);

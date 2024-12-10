@@ -10,6 +10,6 @@ namespace Hotel_Reservation.Application.Features.Guests.Commands.DeleteUser
 {
     public class DeleteUserCommand:IRequest<bool>
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
     }
 }

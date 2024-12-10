@@ -12,7 +12,7 @@ namespace Hotel_Reservation.Core.Entities
     {
         public int Id { get; set; }
         public int RoomId { get; set; }
-        [Range(1, 5),DefaultValue(1)]
+        [Range(1, 5 ,ErrorMessage = "Rating must be between 1 and 5."), DefaultValue(1)]
         
         public int Rating { get; set; } 
         public string? Comment { get; set; }

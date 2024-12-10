@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using Hotel_Reservation.Application.Helper;
+using Hotel_Reservation.Application.Common.Helper;
 using Hotel_Reservation.Core.Models;
 using Hotel_Reservation.Core.Repositories;
 using MediatR;

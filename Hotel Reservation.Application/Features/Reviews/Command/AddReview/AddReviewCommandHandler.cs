@@ -16,7 +16,7 @@ namespace Hotel_Reservation.Application.Features.Reviews.Command.AddReview
         public async Task<Review> Handle(AddReviewCommand request, CancellationToken cancellationToken)
         {
            ReviewCreateDto reviewDto = _mapper.Map<ReviewCreateDto>(request);
-           return await _repo.AddRoomReview(reviewDto);
+           return await _repo.AddRoomReview(reviewDto,rating:request.Rating);
             
         }
     }

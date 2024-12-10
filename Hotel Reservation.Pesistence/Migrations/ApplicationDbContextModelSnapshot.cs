@@ -46,7 +46,9 @@ namespace Hotel_Reservation.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FullName")
-                        .HasColumnType("nvarchar(max)");
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("nvarchar(max)")
+                        .HasComputedColumnSql("[FirstName] + [LastName]");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -96,6 +98,55 @@ namespace Hotel_Reservation.Persistence.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("Hotel_Reservation.Core.Entities.Reserve", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CheckIn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CheckOut")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Days")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GuestId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("GuestId1")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("GuestsCount")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsPaid")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("RoomId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("TotalPrice")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("decimal(18,2)")
+                        .HasComputedColumnSql("[Price] * [Days] ");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GuestId1");
+
+                    b.HasIndex("RoomId");
+
+                    b.ToTable("Reserves");
                 });
 
             modelBuilder.Entity("Hotel_Reservation.Core.Entities.Review", b =>
@@ -280,6 +331,23 @@ namespace Hotel_Reservation.Persistence.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("Hotel_Reservation.Core.Entities.Reserve", b =>
+                {
+                    b.HasOne("Hotel_Reservation.Core.Entities.Guest", "Guest")
+                        .WithMany()
+                        .HasForeignKey("GuestId1");
+
+                    b.HasOne("Hotel_Reservation.Core.Entities.Room", "Room")
+                        .WithMany()
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Guest");
+
+                    b.Navigation("Room");
                 });
 
             modelBuilder.Entity("Hotel_Reservation.Core.Entities.Review", b =>

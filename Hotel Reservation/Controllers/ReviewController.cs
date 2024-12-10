@@ -1,11 +1,12 @@
 ﻿using Hotel_Reservation.Application.Features.Reviews.Command.AddReview;
 using Hotel_Reservation.Application.Features.Reviews.Queries.GetReviewRooms;
 using MediatR;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hotel_Reservation.Controllers
 {
+    [Authorize(AuthenticationSchemes = "Bearer")]
     [Route("api/[controller]")]
     [ApiController]
     public class ReviewController(IMediator _mediator) : ControllerBase

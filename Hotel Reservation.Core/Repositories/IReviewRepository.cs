@@ -11,6 +11,6 @@ namespace Hotel_Reservation.Core.Repositories
     public interface IReviewRepository : IGenericRepository<Review>
     {
         Task<RoomReview> GetRoomsReviews(int roomId);
-        Task<Review>AddRoomReview(ReviewCreateDto reviewDto);
+        Task<Review>AddRoomReview(ReviewCreateDto reviewDto , int rating);
     }
 }

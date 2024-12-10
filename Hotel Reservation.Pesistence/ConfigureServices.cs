@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Hotel_Reservation.Core.Entities;
+﻿using System.Text;
 using Hotel_Reservation.Core.Repositories;
 using Hotel_Reservation.Core.Repositories.Repositrory;
 using Hotel_Reservation.Persistence.Data;
 using Hotel_Reservation.Persistence.Repositrory;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +21,7 @@ namespace Hotel_Reservation.Persistence
             services.AddTransient<IReviewRepository, ReviewRepository>();
             services.AddTransient<IRoomRepository, RoomRepository>();
             services.AddTransient<IGuestRepository, GuestReposititory>();
+            services.AddTransient<IReservationRepository, ReservationRepository>();
 
 
             services.Configure<IdentityOptions>(options =>
@@ -40,24 +37,36 @@ namespace Hotel_Reservation.Persistence
                 options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
             });
 
+            string Issuer = config.GetValue<string>("JWT:Issuer");
+            string Audience = config.GetValue<string>("JWT:Audience");
+            string Key = config.GetValue<string>("JWT:Key");
+
             services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = "Bearer";
+                options.DefaultChallengeScheme = "Bearer";
             }).AddJwtBearer(options =>
             {
                 options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters()
                 {
                     ValidateIssuer = true,
-                    ValidIssuer = config["Jwt:Issuer"],
+                    ValidIssuer = Issuer,
                     ValidateAudience = true,
-                    ValidAudience = config["Jwt:Audience"],
+                    ValidAudience = Audience,
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]))
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Key))
                 };
+                
+
             });
-            
+            services.AddAuthorization(opt =>
+            {
+                opt.AddPolicy("Customers", policy =>
+                policy.RequireClaim("Rooms", ["Customer","Admin"]));
+            });
+                
+
             return services;
         }
     }

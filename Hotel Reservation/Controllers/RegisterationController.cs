@@ -20,11 +20,15 @@ namespace Hotel_Reservation.Controllers
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto register)
         {
+
            if(!ModelState.IsValid) return BadRequest(ModelState);
             Guest guest = new()
             {
                 Email = register.Email,
-                UserName = register.UserName,
+                //UserName = register.UserName,
+                FirstName = register.FirstName,
+                LastName = register.LastName,
+                UserName =register.UserName = register.FirstName + register.LastName
             };
             var result = await _userManager.CreateAsync(guest, register.Password);
             if (result.Succeeded) return Ok(result);
@@ -47,10 +51,14 @@ namespace Hotel_Reservation.Controllers
                 {
                     var userClaims = new List<Claim>
                         {
-                            //new (ClaimTypes.NameIdentifier,user.Id),
+                            new (ClaimTypes.NameIdentifier,user.Id),
                             new (ClaimTypes.Email,user.Email),
+                            new ("Rooms","Customer"),
+                            new ("Admins","Admin"),
+                            new ("Admins","Onwer"),
                         };
 
+                 
 
                     var smKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:Key"]));
                     var signCred = new SigningCredentials(smKey, SecurityAlgorithms.HmacSha256);
@@ -58,8 +66,7 @@ namespace Hotel_Reservation.Controllers
                     (
                         issuer: _config["JWT:Issuer"],
                         audience: _config["JWT:Audience"],
-
-                        expires: DateTime.Now.AddHours(1),
+                        expires: DateTime.Now.AddDays(2),
                         claims: userClaims,
                         signingCredentials: signCred
                     );
