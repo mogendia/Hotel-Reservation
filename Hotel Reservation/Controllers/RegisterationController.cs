@@ -31,7 +31,11 @@ namespace Hotel_Reservation.Controllers
                 UserName =register.UserName = register.FirstName + register.LastName
             };
             var result = await _userManager.CreateAsync(guest, register.Password);
-            if (result.Succeeded) return Ok(result);
+            if (result.Succeeded)
+            {
+                var code = await _userManager.GenerateEmailConfirmationTokenAsync(guest);
+                return Ok(new { message = $"Please Confirm Your Email Whth Code You Have Recieved ", code });
+            }
             foreach (var item in result.Errors)
             {
                 ModelState.AddModelError("Password",item.Description);
@@ -39,6 +43,28 @@ namespace Hotel_Reservation.Controllers
             return BadRequest(ModelState);
 
         }
+        [HttpPost("ConfirmEmail")]
+        public async Task<IActionResult> ConfirmEmail(string email, string code)
+        {
+            if (email == null || code == null) 
+            {
+                return BadRequest("In-Valid Date");
+            }
+            // check email exist
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return BadRequest("In-Valid Date");
+            }
+            // check code
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+            if (result.Succeeded)
+            {
+                return Ok("Email Confirmed");
+            }
+            return BadRequest("Some Thing Went Wrong");
+        }
+
         [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginDto login)
         {
@@ -83,6 +109,39 @@ namespace Hotel_Reservation.Controllers
             }
             ModelState.AddModelError("UserName", "UserName or Passord Not Valid");
             return BadRequest(ModelState);
+        }
+        [HttpPost("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordDto dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var user = await _userManager.FindByEmailAsync(dto.Email);
+            if (user == null) return BadRequest("In-Valid Data");
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            if(string.IsNullOrEmpty(token)) return BadRequest("Something Went Wrong");
+
+            return Ok(new {
+                token,
+                email = user.Email
+
+            });
+        }
+
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+            var user = await _userManager.FindByEmailAsync(dto.Email);
+            if (user == null)
+                return BadRequest("In-Valid Date");
+            var result = await _userManager.ResetPasswordAsync(user,dto.Token,dto.Password);
+            if (result.Succeeded)
+            {
+                return Ok("Password Reset Is Succssfully");
+            }
+            return BadRequest("Something Went Wrong");
+
         }
     }
 }
